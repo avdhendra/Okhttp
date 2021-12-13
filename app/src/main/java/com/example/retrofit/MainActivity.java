@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -34,6 +35,7 @@ ImageView img1;
         t1=findViewById(R.id.textview);
         t2=findViewById(R.id.textview2);
         img1=findViewById(R.id.imageview);
+        Gson gson=new Gson();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -45,23 +47,17 @@ ImageView img1;
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 //  Log.v("TAG",response.body().string());
                 String result = response.body().string();
-                if (response.isSuccessful()) {
-                    try {
-                        JSONObject root = new JSONObject(result);
-                        String img = root.getString("avatar_url");
-                        String name = root.getString("name");
-                        String login = root.getString("login");
-                    runOnUiThread(new Runnable(){
-                                      public void run(){
-                                          t1.setText(name);
-                                          t2.setText(login);
-                                          Picasso.get().load(img).into(img1);
-                                      }
-                                  });
+                if(response.isSuccessful()) {
+                 runOnUiThread(new Runnable() {
+                     @Override
+                     public void run() {
+                         GithubUser user = gson.fromJson(result, GithubUser.class);
+                         t1.setText(user.name);
+                         t2.setText(user.login);
+                         Picasso.get().load(user.avatar_url).into(img1);
+                     }
+                 });
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         });// run on main thread async when u get callback you execute when we get the response
