@@ -15,7 +15,7 @@ public interface GithubService {
     @GET("users/{id}")
     Call<GithubUser>getUserId(@Path("id")String id );
     @GET("search/users")
-    Call<List<GithubUser>> searchUsers(@Query("q")String query);
+    Call<UserResponse> searchUsers(@Query("q")String query);
     // callback is used to get the response from api and it will set it in our POJO class
 
 }
